@@ -22,11 +22,12 @@ def stale_flag(cur_epoch, p):
 
 outstrs = []
 for p in Path.cwd().glob("trained*"):
-    curepoch = get_epoch(p)
-    done = str((p / "classifier-trained.pth").exists())
-    stale = round(stale_flag(curepoch, p))
-    status = "Testing" if (p / f"Epoch {curepoch}" / "train-loss.csv").exists() else "Training"
-    outstrs.append(f"{p.name:40}  |  Current Epoch {curepoch:3}  |  Done: {done:5}  |  Status: {status:8}  |  Stale: {stale} mins")
-   
+    if p.is_dir():
+        curepoch = get_epoch(p)
+        done = str((p / "classifier-trained.pth").exists())
+        stale = round(stale_flag(curepoch, p))
+        status = "Testing" if (p / f"Epoch {curepoch}" / "train-loss.csv").exists() else "Training"
+        outstrs.append(f"{p.name:40}  |  Current Epoch {curepoch:3}  |  Done: {done:5}  |  Status: {status:8}  |  Stale: {stale} mins")
+
 outstrs = "\n".join(sorted(outstrs))
 print (outstrs)
