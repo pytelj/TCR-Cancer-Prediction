@@ -43,6 +43,8 @@ def default_configs(write_to=False):
         "maa-model": True,
         "negative-dir": ["control"],
         "positive-dir": ["pbmc_cancer"],
+        "cdr1": False,
+        "cdr2": False,
         "batch-size": 512,
         "epoch": 50,
         "lr": 0.001,
