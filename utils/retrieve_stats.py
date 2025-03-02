@@ -13,7 +13,7 @@ def getstats(foldername, rolling_window = 20, endofepoch = False):
 
     maxepochs = -1
     for i in epochs:
-        info = str(i).replace(str(dirs) + "\\", "").split("\\")
+        info = str(i).replace(str(dirs) + "/", "").split("/")
         info = [int(info[0].replace("Epoch ", "")), info[1]]
         df = pd.read_csv(i, header = None if "pred" not in info[1] else 0) 
         if "loss" in info[1]:
