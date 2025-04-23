@@ -1,15 +1,6 @@
-<!-- # TCR LLMs for Cancer Prediction
-
-This project aims to investigate difference between the expressivity of physico-chemical properties (i.e. Atchley factors) and language models in cancer classifications using TCR CDR3 sequences.  With the use of a language model, we obtained high AUCs in classifying whether a patient has cancer.
-
-For more details regarding this research, please view my dissertation [here](manuscript.pdf).
-
-> [!WARNING]
-> This code has been tested on Windows 11 and Linux CentOS (UCL CS lab 105 Computers).  Although it should work on other OS, it is not guaranteed to work perfectly. -->
-
 # TCR LLMs for Cancer Prediction (Modified)
 
-This repository is a modified version of [Rudy C. Yuen’s MEng disseratation project](https://github.com/rcwyuen/tcr-cancer-prediction), originally developed at UCL to explore language model-based TCR embeddings for cancer classification.
+This repository is a modified version of [Rudy C. Yuen’s MEng dissertation project](https://github.com/rcwyuen/tcr-cancer-prediction), originally developed at UCL to explore language model-based TCR embeddings for cancer classification.
 
 The current version was developed for a UCL **BSc Computer Science dissertation**, focused on investigating the use of sparse attention-based Multiple Instance Learning (MIL) and pretrained TCR embedding models for cancer classification.
 
@@ -182,3 +173,9 @@ This repository includes several Jupyter notebooks to analyse training behaviour
 - [`sceptr-highweight-tcr-analysis.ipynb`](sceptr-highweight-tcr-analysis.ipynb) **(new)**: Identifies high-attention TCRs that recur across cancer patients in the evaluation set.
 - [`sceptr-vector-alignment.ipynb`](sceptr-vector-alignment.ipynb) **(new)**: Computes cosine similarity and angle between scoring and classifying layer vectors, both within and across runs.
 - [`sceptr-umap-visualisation.ipynb`](sceptr-umap-visualisation.ipynb) **(new)**: Visualises patient-level bag embeddings in 2D using UMAP, showing class separation.
+
+---
+
+Modifications and additions (c) 2025 Jan Pytel
+
+This project builds upon the original work by [RcwYuen](https://github.com/RcwYuen/TCR-Cancer-Prediction) and is used for academic research purposes. The modifications remain under the same MIT License.
