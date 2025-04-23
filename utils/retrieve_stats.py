@@ -48,6 +48,7 @@ def getstats(foldername, rolling_window = 20, endofepoch = False):
         epochwisestats[key] = [i[1] for i in epochwisestats[key]]
     
     return {
+        "foldername": foldername,
         "stats": stats,
         "epochwisestats": epochwisestats,
         "aucstats": aucstats,
