@@ -1,6 +1,6 @@
 {
     "input-path": "data/trimmed",
-    "output-path": "trained-random",
+    "output-path": "trained-atchley",
     "negative-dir": [
         "control"
     ],
