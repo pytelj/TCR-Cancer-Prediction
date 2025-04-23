@@ -1,11 +1,28 @@
-# TCR LLMs for Cancer Prediction
+<!-- # TCR LLMs for Cancer Prediction
 
 This project aims to investigate difference between the expressivity of physico-chemical properties (i.e. Atchley factors) and language models in cancer classifications using TCR CDR3 sequences.  With the use of a language model, we obtained high AUCs in classifying whether a patient has cancer.
 
 For more details regarding this research, please view my dissertation [here](manuscript.pdf).
 
 > [!WARNING]
-> This code has been tested on Windows 11 and Linux CentOS (UCL CS lab 105 Computers).  Although it should work on other OS, it is not guaranteed to work perfectly.
+> This code has been tested on Windows 11 and Linux CentOS (UCL CS lab 105 Computers).  Although it should work on other OS, it is not guaranteed to work perfectly. -->
+
+# TCR LLMs for Cancer Prediction (Modified)
+
+This repository is a modified version of [Rudy C. Yuen’s MEng disseratation project](https://github.com/rcwyuen/tcr-cancer-prediction), originally developed at UCL to explore language model-based TCR embeddings for cancer classification.
+
+The current version was developed for a UCL **BSc Computer Science dissertation**, focused on investigating the use of sparse attention-based Multiple Instance Learning (MIL) and pretrained TCR embedding models for cancer classification.
+
+Key extensions and contributions in this version include:
+- A custom data preprocessing pipeline (`data-preprocessing/`) for manually supplied alpha and beta chain files.
+- Split-by-chain training (alpha and beta chains processed independently).
+- Three new interpretability experiments on the SCEPTR model (Section 6.2 of the dissertation).
+- Updated results and comparative evaluations for symbolic vs subsymbolic encodings.
+
+For more details regarding this research, please refer to the accompanying [dissertation report](manuscript.pdf).
+
+> [!WARNING]
+> This code has been tested on Linux CentOS (UCL CS lab 105 Computers).  Although it should work on other OS, it is not guaranteed to work perfectly.
 
 ---
 
@@ -33,35 +50,51 @@ For more details regarding this research, please view my dissertation [here](man
 
 ---
 
-## Downloading Required Files
+## Preparing the Dataset
 
-> [!IMPORTANT]
-> To download the data, you would need to have access to the Chain Lab RDS and be connected with UCL's network.
+To process local TCR data files (manually provided), the following scripts are used from the `data-preprocessing/` directory:
 
-### Data Fetching
+#### `data-preprocessing/`
+- `select_files_for_eval.py`  
+  Randomly selects a subset of patients for evaluation, producing CSV files listing the selected cancer and control files separately for α and β chains.
 
-To pull the data from the Chain Lab RDS, you may run the following command.  Please modify ```rds_mountpoint``` in ```loaders/config.json``` to your mountpoint in your computer.  You should not amend other configurations in the file.
+- `move_eval_files.py`  
+  Moves selected evaluation files into a dedicated subdirectory to separate training/test data from evaluation data.
 
-```
-python loaders/load_cdr.py -config_path loaders/config.json
-```
+- `convert_to_sceptr_alpha.py` and `convert_to_sceptr_beta.py`  
+  Preprocess and clean α/β chain files into the SCEPTR-compatible format. This includes:
+  - Filtering for valid V/J gene calls and non-empty CDR3 sequences.
+  - Enforcing chain-specific functionality via `tidytcells`.
+  - Outputting a 6-column TSV file compatible with SCEPTR (`TRAV`, `TRAJ`, `CDR3A`, `TRBV`, `TRBJ`, `CDR3B`).
 
-To compress the data (i.e. removing all data other than V call, J call and CDR3 sequences), you may run
-
+Additionally, to compress the data (i.e. removing all data other than V call, J call and CDR3 sequences), you may run
 ```
 python utils/file-compressor.py
 ```
 
-The fetched data will contain files that are from multiple sampling timestamps.  To obtain the data for healthy patients and remove duplicated patient files, please run:
-```
-python utils/remove-control-dups.py
-python rds_file_locations/remove-cancer-dups.py
-```
+#### Evaluation and Train/Test Set Splits
 
-#### Evaluation Set
+The evaluation and training/test patient files are listed in the `data-preprocessing/filenames/` directory.
 
-The IDs for patients in the evaluation set is [here](loaders/eval-set-ids.txt) with [these](loaders/eval-set-fnames.txt) file names.
+Each subdirectory contains `.csv` files specifying the filenames for $\alpha$ and $\beta$ chain data, grouped by class (control vs cancer) and by usage split (train/test vs evaluation):
 
+- [`data-preprocessing/filenames/alpha/`](data-preprocessing/filenames/alpha/)
+  - [`eval_control_files.csv`](data-preprocessing/filenames/alpha/eval_control_files.csv)
+  - [`eval_pbmc_cancer_files.csv`](data-preprocessing/filenames/alpha/eval_pbmc_cancer_files.csv)
+  - [`traintest_control_files.csv`](data-preprocessing/filenames/alpha/traintest_control_files.csv)
+  - [`traintest_pbmc_cancer_files.csv`](data-preprocessing/filenames/alpha/traintest_pbmc_cancer_files.csv)
+
+- [`data-preprocessing/filenames/beta/`](data-preprocessing/filenames/beta/)
+  - [`eval_control_files.csv`](data-preprocessing/filenames/beta/eval_control_files.csv)
+  - [`eval_pbmc_cancer_files.csv`](data-preprocessing/filenames/beta/eval_pbmc_cancer_files.csv)
+  - [`traintest_control.csv`](data-preprocessing/filenames/beta/traintest_control.csv)
+  - [`traintest_pbmc_cancer_files.csv`](data-preprocessing/filenames/beta/traintest_pbmc_cancer_files.csv)
+
+Evaluation set filenames were randomly selected using `select_files_for_eval.py`.
+
+---
+
+## Downloading TCR-BERT and SCEPTR Models
 
 ### Downloading TCR-BERT
 
@@ -126,7 +159,8 @@ python trainer.py -c custom-configs.json
 
 ## Analysing Training Instances
 
-We have placed the results for our training with the configs in `results`.
+The original results from Rudy’s MEng project are retained under `results/` for reference and comparison. All new experiments performed as part of this BSc dissertation—covering both $\alpha$ and $\beta$ chain models—are located in `results-new-alpha/` and `results-new-beta/`.
+
 
 ### Usage of the Evaluation Set
 
@@ -138,24 +172,13 @@ python src/calculate_evals.py
 
 ### Jupyter Notebooks
 
-Throughout training, checkpoints will be made alongside with this current epoch's training statistics such as loss, accuracies and sufficient data to compute the AUC.  This repository provides Jupyter Files to analyse the whole training loop's statistics.  The Jupyter Files are as follows:
+This repository includes several Jupyter notebooks to analyse training behaviour and interpret model predictions. Key notebooks include:
 
 - [`training-stats-analysis.ipynb`](training-stats-analysis.ipynb): Generates the loss, accuracy and AUC graphs for *one* training instance.
 - [`training-stats-combined.ipynb`](training-stats-combined.ipynb): Generates the loss, accuracy and AUC graphs for a series of training instances.
-- [`sceptr-similarity.ipynb`](sceptr-similarity.ipynb): Computes the cosine similarity and euclidean distance between the scoring layer and classifying layer's weights after an l2-norm for SCEPTR's downstream model.
-- [`sceptr-interpretability.ipynb`](sceptr-interpretability.ipynb): Computed Appendix A.3 of the manuscript.  It finds the occurence of V/J calls that the model assigned a non-zero weighting in the evaluation dataset as well as CDR3 sequences that is shared between multiple patients and is assigned a non-zero weighting.
+- [`training-stats-combined-alpha-vs-beta.ipynb`](training-stats-combined-alpha-vs-beta.ipynb) **(new)**: Extension of the above to directly compare $\alpha$ and $\beta$ models on the same plots.
 - [`eval-stats-combined.ipynb`](eval-stats-combined.ipynb): Generates the confusion matrix and AUC curves for the models that are trained under a 3-way split.
-
----
-
-## Known Errors
-
-We report known errors here.  Please contact me [here](mailto://rcwyuen@gmail.com) to report any problems.
-
-- Path Length: If your path is too long in Windows, you are prone to the following error:
-
-  ```
-  DLL load failed while importing $SOMETHING$: The filename or extension is too long.
-  ```
-
-  A mitigation strategy is to use the global Python, or to put your files in a shorter directory.
+- [`training-stats-tables.ipynb`](training-stats-tables.ipynb) **(new)**: Produces tables summarising accuracy, loss, and AUC on training and test sets across all runs and embeddings.
+- [`sceptr-highweight-tcr-analysis.ipynb`](sceptr-highweight-tcr-analysis.ipynb) **(new)**: Identifies high-attention TCRs that recur across cancer patients in the evaluation set.
+- [`sceptr-vector-alignment.ipynb`](sceptr-vector-alignment.ipynb) **(new)**: Computes cosine similarity and angle between scoring and classifying layer vectors, both within and across runs.
+- [`sceptr-umap-visualisation.ipynb`](sceptr-umap-visualisation.ipynb) **(new)**: Visualises patient-level bag embeddings in 2D using UMAP, showing class separation.
