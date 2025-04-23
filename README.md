@@ -101,7 +101,7 @@ Evaluation set filenames were randomly selected using `select_files_for_eval.py`
 To download the two variants of [TCR-BERT](https://www.biorxiv.org/content/10.1101/2021.11.18.469186v1), you may run the following command:
 
 ```
-python loaders/load_ptm.py -o model
+python loaders/load_tcrbert.py -o model
 ```
 
 ### Downloading SCEPTR
