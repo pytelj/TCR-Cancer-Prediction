@@ -10,8 +10,6 @@ Key extensions and contributions in this version include:
 - Three new interpretability experiments on the SCEPTR model (Section 6.2 of the dissertation).
 - Updated results and comparative evaluations for symbolic vs subsymbolic encodings.
 
-For more details regarding this research, please refer to the accompanying [dissertation report](manuscript.pdf).
-
 > [!WARNING]
 > This code has been tested on Linux CentOS (UCL CS lab 105 Computers).  Although it should work on other OS, it is not guaranteed to work perfectly.
 
